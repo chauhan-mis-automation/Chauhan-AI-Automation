@@ -303,6 +303,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 "✓ Thank you! Your message has been sent successfully.";
             }
             heroForm.reset();
+            window.location.href = "thank-you.html";
+            return;
           } catch (error) {
             if (heroStatus) {
               heroStatus.classList.add("error");
@@ -368,6 +370,8 @@ document.addEventListener("DOMContentLoaded", function () {
               "✓ Thank you! Your message has been sent successfully.";
 
             form.reset();
+            window.location.href = "thank-you.html";
+            return;
           } catch (error) {
             status.classList.add("error");
             status.textContent =
