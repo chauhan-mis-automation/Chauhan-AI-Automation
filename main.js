@@ -265,7 +265,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Same Google Apps Script Web App URL used by the main contact form
         // and the React site — keeps all leads in one Google Sheet.
         const HERO_SHEET_URL =
-          "https://script.google.com/macros/s/AKfycbyRmgVegDzIfMWStvziBxdNQt16wd3iblMcrijlzuWkdvNWpNRo99vk8a42m4e3dRfi/exec";
+          "https://script.google.com/macros/s/AKfycbycI_jfWFjo3vPZ0o32DUzrZHV6sLj49thJYHDND7nLixyV3ofbt-W2-9GIaGFMd4pC/exec";
 
         heroForm.addEventListener("submit", async function (e) {
           e.preventDefault();
@@ -329,7 +329,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Same Google Apps Script Web App URL used by the React site —
         // keeps all leads (both sites) in one Google Sheet.
         const GOOGLE_SHEET_URL =
-          "https://script.google.com/macros/s/AKfycbyRmgVegDzIfMWStvziBxdNQt16wd3iblMcrijlzuWkdvNWpNRo99vk8a42m4e3dRfi/exec";
+          "https://script.google.com/macros/s/AKfycbycI_jfWFjo3vPZ0o32DUzrZHV6sLj49thJYHDND7nLixyV3ofbt-W2-9GIaGFMd4pC/exec";
 
         form.addEventListener("submit", async function (e) {
           e.preventDefault();
