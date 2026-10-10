@@ -311,23 +311,21 @@ document.addEventListener("DOMContentLoaded", function () {
           var btn = this.querySelector('[type="submit"]');
           if (btn) btn.disabled = true;
           if (heroStatus) { heroStatus.className = 'cm-form-status'; heroStatus.textContent = ''; }
+          // Fire Supabase CRM sync (keepalive so it completes even if GTM redirects first)
+          fetch('https://blihucaykcporqfgpevb.supabase.co/functions/v1/receive-lead', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer sb_publishable_UfK3U1Y9tZGkEC-w3Fgipw_kFRlK4P8' },
+            body: JSON.stringify(payload),
+            keepalive: true
+          }).catch(function() {});
+          // Show success and redirect (GTM sheet tag fires in parallel via bubble phase)
           try {
-            var res = await fetch('https://blihucaykcporqfgpevb.supabase.co/functions/v1/receive-lead', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer sb_publishable_UfK3U1Y9tZGkEC-w3Fgipw_kFRlK4P8' },
-              body: JSON.stringify(payload)
-            });
-            var json = await res.json();
-            if (json.status === 'ok') {
-              if (heroStatus) {
-                heroStatus.classList.add('success');
-                heroStatus.textContent = '✓ Thank you! Your message has been sent successfully.';
-              }
-              this.reset();
-              window.location.href = '/thank-you';
-            } else {
-              throw new Error(json.message || 'Server error');
+            if (heroStatus) {
+              heroStatus.classList.add('success');
+              heroStatus.textContent = '✓ Thank you! Your message has been sent successfully.';
             }
+            this.reset();
+            setTimeout(function() { window.location.href = '/thank-you'; }, 800);
           } catch(err) {
             if (heroStatus) {
               heroStatus.classList.add('error');
@@ -370,23 +368,21 @@ document.addEventListener("DOMContentLoaded", function () {
           var btn = this.querySelector('[type="submit"]');
           if (btn) btn.disabled = true;
           if (cmStatus) { cmStatus.className = 'cm-form-status'; cmStatus.textContent = ''; }
+          // Fire Supabase CRM sync (keepalive so it completes even if GTM redirects first)
+          fetch('https://blihucaykcporqfgpevb.supabase.co/functions/v1/receive-lead', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer sb_publishable_UfK3U1Y9tZGkEC-w3Fgipw_kFRlK4P8' },
+            body: JSON.stringify(payload),
+            keepalive: true
+          }).catch(function() {});
+          // Show success and redirect (GTM sheet tag fires in parallel via bubble phase)
           try {
-            var res = await fetch('https://blihucaykcporqfgpevb.supabase.co/functions/v1/receive-lead', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer sb_publishable_UfK3U1Y9tZGkEC-w3Fgipw_kFRlK4P8' },
-              body: JSON.stringify(payload)
-            });
-            var json = await res.json();
-            if (json.status === 'ok') {
-              if (cmStatus) {
-                cmStatus.classList.add('success');
-                cmStatus.textContent = '✓ Thank you! Your message has been sent successfully.';
-              }
-              this.reset();
-              window.location.href = '/thank-you';
-            } else {
-              throw new Error(json.message || 'Server error');
+            if (cmStatus) {
+              cmStatus.classList.add('success');
+              cmStatus.textContent = '✓ Thank you! Your message has been sent successfully.';
             }
+            this.reset();
+            setTimeout(function() { window.location.href = '/thank-you'; }, 800);
           } catch(err) {
             if (cmStatus) {
               cmStatus.classList.add('error');
