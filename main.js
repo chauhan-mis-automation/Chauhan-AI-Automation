@@ -1,4 +1,29 @@
-  
+
+    function getTrackingData() {
+      var params = new URLSearchParams(window.location.search);
+      var stored = {};
+      try { stored = JSON.parse(sessionStorage.getItem('__track') || '{}'); } catch(e) {}
+      return {
+        utm_source:   params.get('utm_source')   || stored.utm_source   || '',
+        utm_medium:   params.get('utm_medium')   || stored.utm_medium   || '',
+        utm_campaign: params.get('utm_campaign') || stored.utm_campaign || '',
+        utm_term:     params.get('utm_term')     || stored.utm_term     || '',
+        utm_content:  params.get('utm_content')  || stored.utm_content  || '',
+        gclid:        params.get('gclid')        || stored.gclid        || '',
+        fbclid:       params.get('fbclid')       || stored.fbclid       || '',
+        page_url:     window.location.href,
+        referrer:     document.referrer || ''
+      };
+    }
+
+    // Save tracking data to sessionStorage on page load
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('utm_source') || params.get('gclid') || params.get('fbclid')) {
+        try { sessionStorage.setItem('__track', JSON.stringify(Object.fromEntries(params))); } catch(e) {}
+      }
+    })();
+
     /* =========================================
    COUNTER ANIMATION
 ========================================= */
@@ -258,127 +283,117 @@ document.addEventListener("DOMContentLoaded", function () {
       document.addEventListener("DOMContentLoaded", function () {
         const heroForm = document.getElementById("heroContactForm");
         if (!heroForm) return;
-
         const heroStatus = document.getElementById("heroFormStatus");
-        const heroButton = heroForm.querySelector(".hero-form-btn");
-
-        // Same Google Apps Script Web App URL used by the main contact form
-        // and the React site — keeps all leads in one Google Sheet.
-        const HERO_SHEET_URL =
-          "https://script.google.com/macros/s/AKfycbycI_jfWFjo3vPZ0o32DUzrZHV6sLj49thJYHDND7nLixyV3ofbt-W2-9GIaGFMd4pC/exec";
 
         heroForm.addEventListener("submit", async function (e) {
           e.preventDefault();
-
-          if (heroStatus) {
-            heroStatus.className = "cm-form-status";
-            heroStatus.textContent = "";
-          }
-
-          const originalBtnHtml = heroButton ? heroButton.innerHTML : "";
-          if (heroButton) {
-            heroButton.disabled = true;
-            heroButton.textContent = "Sending...";
-          }
-
-          const payload = {
-            name: heroForm.querySelector('[name="name"]').value.trim(),
-            phone: heroForm.querySelector('[name="phone"]').value.trim(),
-            email: heroForm.querySelector('[name="email"]').value.trim(),
-            service: heroForm.querySelector('[name="service"]').value.trim(),
-            message: heroForm.querySelector('[name="message"]').value.trim(),
+          var honeypot = this.querySelector('#website');
+          if (honeypot && honeypot.value.trim() !== '') return;
+          var tracking = getTrackingData();
+          var payload = {
+            name:    this.querySelector('[name="name"]').value.trim(),
+            phone:   this.querySelector('[name="phone"]').value.trim(),
+            email:   this.querySelector('[name="email"]').value.trim(),
+            service: this.querySelector('[name="service"]').value.trim(),
+            message: this.querySelector('[name="message"]') ? this.querySelector('[name="message"]').value.trim() : '',
+            utm_source: tracking.utm_source,
+            utm_medium: tracking.utm_medium,
+            utm_campaign: tracking.utm_campaign,
+            utm_term: tracking.utm_term,
+            utm_content: tracking.utm_content,
+            gclid: tracking.gclid,
+            fbclid: tracking.fbclid,
+            page_url: tracking.page_url,
+            referrer: tracking.referrer,
+            website: honeypot ? honeypot.value.trim() : ''
           };
-
+          payload.source = tracking.gclid ? 'google_ads' : (tracking.utm_source || 'website_form');
+          var btn = this.querySelector('[type="submit"]');
+          if (btn) btn.disabled = true;
+          if (heroStatus) { heroStatus.className = 'cm-form-status'; heroStatus.textContent = ''; }
           try {
-            await fetch(HERO_SHEET_URL, {
-              method: "POST",
-              mode: "no-cors",
-              headers: { "Content-Type": "text/plain" },
-              body: JSON.stringify(payload),
+            var res = await fetch('https://blihucaykcporqfgpevb.supabase.co/functions/v1/receive-lead', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer sb_publishable_UfK3U1Y9tZGkEC-w3Fgipw_kFRlK4P8' },
+              body: JSON.stringify(payload)
             });
-
-            if (heroStatus) {
-              heroStatus.classList.add("success");
-              heroStatus.textContent =
-                "✓ Thank you! Your message has been sent successfully.";
+            var json = await res.json();
+            if (json.status === 'ok') {
+              if (heroStatus) {
+                heroStatus.classList.add('success');
+                heroStatus.textContent = '✓ Thank you! Your message has been sent successfully.';
+              }
+              this.reset();
+              window.location.href = '/thank-you';
+            } else {
+              throw new Error(json.message || 'Server error');
             }
-            heroForm.reset();
-            window.location.href = "/thank-you";
-            return;
-          } catch (error) {
+          } catch(err) {
             if (heroStatus) {
-              heroStatus.classList.add("error");
-              heroStatus.textContent =
-                "Unable to send your message. Please try again or contact us on WhatsApp.";
+              heroStatus.classList.add('error');
+              heroStatus.textContent = 'Something went wrong. Please try again or call us directly.';
             }
           } finally {
-            if (heroButton) {
-              heroButton.disabled = false;
-              heroButton.innerHTML = originalBtnHtml;
-            }
+            if (btn) btn.disabled = false;
           }
         });
       });
 
       document.addEventListener("DOMContentLoaded", function () {
         const form = document.getElementById("chauhanContactForm");
-        const button = document.getElementById("cmSubmitBtn");
-        const buttonText = button.querySelector(".cm-submit-text");
-        const status = document.getElementById("cmFormStatus");
-
-        // Same Google Apps Script Web App URL used by the React site —
-        // keeps all leads (both sites) in one Google Sheet.
-        const GOOGLE_SHEET_URL =
-          "https://script.google.com/macros/s/AKfycbycI_jfWFjo3vPZ0o32DUzrZHV6sLj49thJYHDND7nLixyV3ofbt-W2-9GIaGFMd4pC/exec";
+        if (!form) return;
+        const cmStatus = document.getElementById("cmFormStatus");
 
         form.addEventListener("submit", async function (e) {
           e.preventDefault();
-
-          // Honeypot spam check (kept from the original PHP logic)
-          const honeypot = form.querySelector('[name="website"]');
-          if (honeypot && honeypot.value) {
-            return; // silently drop bot submissions
-          }
-
-          status.className = "cm-form-status";
-          status.textContent = "";
-
-          button.disabled = true;
-          buttonText.textContent = "Sending...";
-
-          const payload = {
-            name: form.querySelector('[name="name"]').value.trim(),
-            phone: form.querySelector('[name="phone"]').value.trim(),
-            email: form.querySelector('[name="email"]').value.trim(),
-            service: form.querySelector('[name="service"]').value.trim(),
-            message: form.querySelector('[name="message"]').value.trim(),
+          var honeypot = this.querySelector('#website');
+          if (honeypot && honeypot.value.trim() !== '') return;
+          var tracking = getTrackingData();
+          var payload = {
+            name:    this.querySelector('[name="name"]').value.trim(),
+            phone:   this.querySelector('[name="phone"]').value.trim(),
+            email:   this.querySelector('[name="email"]').value.trim(),
+            service: this.querySelector('[name="service"]').value.trim(),
+            message: this.querySelector('[name="message"]') ? this.querySelector('[name="message"]').value.trim() : '',
+            utm_source: tracking.utm_source,
+            utm_medium: tracking.utm_medium,
+            utm_campaign: tracking.utm_campaign,
+            utm_term: tracking.utm_term,
+            utm_content: tracking.utm_content,
+            gclid: tracking.gclid,
+            fbclid: tracking.fbclid,
+            page_url: tracking.page_url,
+            referrer: tracking.referrer,
+            website: honeypot ? honeypot.value.trim() : ''
           };
-
+          payload.source = tracking.gclid ? 'google_ads' : (tracking.utm_source || 'website_form');
+          var btn = this.querySelector('[type="submit"]');
+          if (btn) btn.disabled = true;
+          if (cmStatus) { cmStatus.className = 'cm-form-status'; cmStatus.textContent = ''; }
           try {
-            // mode: "no-cors" is required because Apps Script doesn't send
-            // CORS headers; this means we can't read the response body, so
-            // we treat "fetch didn't throw" as success.
-            await fetch(GOOGLE_SHEET_URL, {
-              method: "POST",
-              mode: "no-cors",
-              headers: { "Content-Type": "text/plain" },
-              body: JSON.stringify(payload),
+            var res = await fetch('https://blihucaykcporqfgpevb.supabase.co/functions/v1/receive-lead', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer sb_publishable_UfK3U1Y9tZGkEC-w3Fgipw_kFRlK4P8' },
+              body: JSON.stringify(payload)
             });
-
-            status.classList.add("success");
-            status.textContent =
-              "✓ Thank you! Your message has been sent successfully.";
-
-            form.reset();
-            window.location.href = "/thank-you";
-            return;
-          } catch (error) {
-            status.classList.add("error");
-            status.textContent =
-              "Unable to send your message. Please try again or contact us on WhatsApp.";
+            var json = await res.json();
+            if (json.status === 'ok') {
+              if (cmStatus) {
+                cmStatus.classList.add('success');
+                cmStatus.textContent = '✓ Thank you! Your message has been sent successfully.';
+              }
+              this.reset();
+              window.location.href = '/thank-you';
+            } else {
+              throw new Error(json.message || 'Server error');
+            }
+          } catch(err) {
+            if (cmStatus) {
+              cmStatus.classList.add('error');
+              cmStatus.textContent = 'Something went wrong. Please try again or call us directly.';
+            }
           } finally {
-            button.disabled = false;
-            buttonText.textContent = "Send Message";
+            if (btn) btn.disabled = false;
           }
         });
       });
