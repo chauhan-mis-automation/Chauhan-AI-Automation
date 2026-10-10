@@ -312,12 +312,12 @@ document.addEventListener("DOMContentLoaded", function () {
           if (btn) btn.disabled = true;
           if (heroStatus) { heroStatus.className = 'cm-form-status'; heroStatus.textContent = ''; }
           // Fire Supabase CRM sync (keepalive so it completes even if GTM redirects first)
-          fetch('https://blihucaykcporqfgpevb.supabase.co/functions/v1/receive-lead', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer sb_publishable_UfK3U1Y9tZGkEC-w3Fgipw_kFRlK4P8' },
-            body: JSON.stringify(payload),
-            keepalive: true
-          }).catch(function() {});
+          // fetch('https://blihucaykcporqfgpevb.supabase.co/functions/v1/receive-lead', {
+          //   method: 'POST',
+          //   headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer sb_publishable_UfK3U1Y9tZGkEC-w3Fgipw_kFRlK4P8' },
+          //   body: JSON.stringify(payload),
+          //   keepalive: true
+          // }).catch(function() {});
           // Show success and redirect (GTM sheet tag fires in parallel via bubble phase)
           try {
             if (heroStatus) {
@@ -369,12 +369,12 @@ document.addEventListener("DOMContentLoaded", function () {
           if (btn) btn.disabled = true;
           if (cmStatus) { cmStatus.className = 'cm-form-status'; cmStatus.textContent = ''; }
           // Fire Supabase CRM sync (keepalive so it completes even if GTM redirects first)
-          fetch('https://blihucaykcporqfgpevb.supabase.co/functions/v1/receive-lead', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer sb_publishable_UfK3U1Y9tZGkEC-w3Fgipw_kFRlK4P8' },
-            body: JSON.stringify(payload),
-            keepalive: true
-          }).catch(function() {});
+          // fetch('https://blihucaykcporqfgpevb.supabase.co/functions/v1/receive-lead', {
+          //   method: 'POST',
+          //   headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer sb_publishable_UfK3U1Y9tZGkEC-w3Fgipw_kFRlK4P8' },
+          //   body: JSON.stringify(payload),
+          //   keepalive: true
+          // }).catch(function() {});
           // Show success and redirect (GTM sheet tag fires in parallel via bubble phase)
           try {
             if (cmStatus) {
