@@ -376,6 +376,14 @@ document.addEventListener("DOMContentLoaded", function () {
           var btn = this.querySelector('[type="submit"]');
           if (btn) btn.disabled = true;
           if (cmStatus) { cmStatus.className = 'cm-form-status'; cmStatus.textContent = ''; }
+          // Fire Google Sheet post (fire-and-forget; runs in parallel with the Supabase post below)
+          fetch('https://script.google.com/macros/s/AKfycbycI_jfWFjo3vPZ0o32DUzrZHV6sLj49thJYHDND7nLixyV3ofbt-W2-9GIaGFMd4pC/exec', {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify(payload),
+            keepalive: true
+          }).catch(function() {});
           // Fire Supabase CRM sync (keepalive so it completes even if GTM redirects first)
           fetch('https://uorcnrymyrddyelehcwq.supabase.co/functions/v1/receive-lead', {
             method: 'POST',
