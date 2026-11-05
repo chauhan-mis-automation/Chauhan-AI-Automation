@@ -8685,7 +8685,7 @@ body{
   display:grid;
 
   grid-template-columns:
-    repeat(3,1fr);
+    repeat(4,1fr);
 
   gap:20px;
 }
@@ -9147,6 +9147,18 @@ body{
     rgba(0,0,0,.60);
 }
 
+.cm-video-modal-box iframe{
+  width:100%;
+  display:block;
+  aspect-ratio:16/9;
+  border:0;
+  background:#000;
+}
+
+.cm-video-modal-box [hidden]{
+  display:none !important;
+}
+
 .cm-video-modal-box video{
   width:100%;
 
@@ -9263,4 +9275,43 @@ body{
     min-height:auto;
   }
 
+}
+
+/* 4 project cards: 2 per row on medium screens */
+@media(max-width:1300px){
+  .cm-software-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+@media(max-width:650px){
+  .cm-software-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* Equal-height project cards: title, text and button aligned */
+.cm-software-card{
+  display:flex;
+  flex-direction:column;
+}
+.cm-software-content{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+.cm-software-content h4{
+  min-height:2.5em;          /* room for 2-line titles */
+}
+.cm-software-content p{
+  flex:1;
+}
+.cm-software-content .cm-watch-video{
+  align-self:flex-start;
+  margin-top:auto;
+  padding-top:14px;
+}
+@media(max-width:650px){
+  .cm-software-content h4{
+    min-height:auto;
+  }
 }
